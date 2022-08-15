@@ -13,14 +13,14 @@ namespace NativeCLib
 
         // WebFB Constructors
         [DllImport("libCLib", EntryPoint = "create")] public static extern IntPtr Init();
-        [DllImport("libCLib", EntryPoint = "createParams")] public static extern IntPtr InitParams(int num, [MarshalAs(UnmanagedType.LPStr)] string str); ///!!!!!!
 
-        // WebFB Getters
-        [DllImport("libCLib", EntryPoint = "getWFBNum")] public static extern int getNum(IntPtr wfbPtr);
-        [DllImport("libCLib", EntryPoint = "getWFBStr", CharSet = CharSet.Ansi)] public static extern IntPtr getStr(IntPtr wfbPtr);
+        [DllImport("libCLib", EntryPoint = "createParams")] 
+        public static extern IntPtr InitParams([MarshalAs(UnmanagedType.LPStr)] string IP, [MarshalAs(UnmanagedType.LPStr)] string Port); 
+
+        // WebFB Destructor
+        [DllImport("libCLib", EntryPoint = "destruct")] public static extern void destruct(IntPtr wfb);
 
         //WebFB Setters
-        [DllImport("libCLib", EntryPoint = "setWFBNum")] public static extern void setNum(IntPtr wfbPtr, int num);
-        [DllImport("libCLib", EntryPoint = "setWFBStr")] public static extern void setStr(IntPtr wfbPtr, [MarshalAs(UnmanagedType.LPStr)] string str); ///!!!!!!
+        [DllImport("libCLib", EntryPoint = "getWFBErr")] public static extern UInt32 getErr(IntPtr wfb);
     }
 }

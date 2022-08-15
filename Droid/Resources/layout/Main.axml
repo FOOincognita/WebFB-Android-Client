@@ -9,20 +9,20 @@
         android:theme="@android:style/Theme.Holo"
         android:textColor="@android:color/white"
         android:textAlignment="center"
-        android:inputType="number"
+        android:inputType="number|text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/left"
-        android:hint="Left Value" />
+        android:hint="IP" />
     <EditText
         android:theme="@android:style/Theme.Holo"
         android:textColor="@android:color/white"
         android:textAlignment="center"
-        android:inputType="number"
+        android:inputType="number|text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/right"
-        android:hint="Right Value" />
+        android:hint="Port" />
     <TextView
         android:text="@string/TextResult"
         android:textAppearance="?android:attr/textAppearanceLarge"

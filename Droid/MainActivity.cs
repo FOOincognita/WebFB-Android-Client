@@ -26,17 +26,21 @@ namespace Droid
 
             button.Click += (sender, args) =>
             {
-                IntPtr wfbObj = WebFB.InitParams(420, "InitStrVal");
+                //IntPtr wfbObj = WebFB.InitParams(420, "InitStrVal");
 
-                string tstStr = Marshal.PtrToStringAnsi(WebFB.getStr(wfbObj)) + "; ";
-                WebFB.setStr(wfbObj, "NewStrVal");
+                //string tstStr = Marshal.PtrToStringAnsi(WebFB.getStr(wfbObj)) + "; ";
+                //WebFB.setStr(wfbObj, "NewStrVal");
 
-                tstStr += Marshal.PtrToStringAnsi(WebFB.getStr(wfbObj));
+                //tstStr += Marshal.PtrToStringAnsi(WebFB.getStr(wfbObj));
 
 
-                var left = int.Parse(FindViewById<EditText>(Resource.Id.left).Text);
-                var right = int.Parse(FindViewById<EditText>(Resource.Id.right).Text);
-                FindViewById<TextView>(Resource.Id.result).Text = tstStr; //CLib.Sub(left, right)
+                // var left = int.Parse(FindViewById<EditText>(Resource.Id.left).Text);
+                // var right = int.Parse(FindViewById<EditText>(Resource.Id.right).Text);
+
+                string left = FindViewById<EditText>(Resource.Id.left).Text;
+                string right = FindViewById<EditText>(Resource.Id.right).Text;
+
+                FindViewById<TextView>(Resource.Id.result).Text = (left + "; " + right); //CLib.Sub(left, right)
 
                 /*
                 catch 
