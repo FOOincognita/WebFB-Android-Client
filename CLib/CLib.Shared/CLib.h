@@ -1,21 +1,38 @@
-#pragma once
-
+//#pragma once
+#pragma comment(lib "BTICARD.lib")
 #include <stdint.h>
 #include <string>
 #include <cstring>
+
 #include <iostream>
-#include <string>
+#include <string.h>
+#include <strings.h>
+#include <sstream>
+#include <stdexcept>
+#include <bitset>
 #include <iomanip>
 #include <cstdint>
+#include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <unordered_map>
+#include <termios.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
+#include <errno.h>
+#include <sys/poll.h>
+#include <sys/eventfd.h>
 #include <sys/socket.h>
+#include <syslog.h>
 #include <arpa/inet.h>
+#include <stddef.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+
+#include "..\..\..\BTICard.h"
+#include "..\..\..\BTICARD.lib"
 
 //*	Definitions
 //? WebFB Default Values

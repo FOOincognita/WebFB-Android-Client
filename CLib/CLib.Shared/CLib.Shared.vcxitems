@@ -17,6 +17,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)CLib.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\BTICard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CLib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="$(MSBuildThisFileDirectory)..\..\..\BTI429.LIB" />
+    <Library Include="$(MSBuildThisFileDirectory)..\..\..\BTICARD.LIB" />
+    <Library Include="$(MSBuildThisFileDirectory)..\..\..\libbtiCard.so" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\BTICARD.DLL" />
   </ItemGroup>
 </Project>
