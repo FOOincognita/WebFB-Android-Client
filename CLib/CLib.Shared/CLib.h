@@ -62,22 +62,22 @@ public:
     manage_t data;
 
 private:
+    int	            sockError;
     sigset_t    	sockSigMask;
     std::size_t		sockFD;
     std::string    	sockIP;
     std::uint16_t  	sockPort;
-    std::uint32_t	sockError;
 
 public:
     WebFB();
     WebFB(std::string IP, std::string Port);
     ~WebFB();
 
-    int mkSock();
+    bool mkSock();
     int sockConnect();
     int initSockPoll();
 
-    std::uint32_t getErr();
+    int getErr();
 };
 
 

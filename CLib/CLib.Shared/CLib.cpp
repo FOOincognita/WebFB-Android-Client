@@ -32,22 +32,62 @@ void WebFB::setStr(std::string s) { this->str = s;  }
 
 //* Default Constructor
 WebFB::WebFB()
-	: sockIP(DEFAULT_IP), sockPort((std::uint16_t)strtoul(std::string(DEFAULT_PORT).c_str(), NULL, 0)), sockFD(-1), sockError(0) {
+	: sockIP(DEFAULT_IP), sockPort((std::uint16_t)strtoul(std::string(DEFAULT_PORT).c_str(), NULL, 0)), sockFD(-1), sockError(69) {
 
-	sockError = (!this->mkSock()) ? -1 : 0;
-	sockError = (!this->sockConnect()) ? -2 : 0;
-	sockError = (!this->initSockPoll()) ? -3 : 0;
+	if (!this->mkSock()) {
+		sockError = -1;
+		return;
+	}
+	else {
+		sockError = 0;
+	}
+
+	if (!this->sockConnect()) {
+		sockError = -2;
+		return;
+	}
+	else {
+		sockError = 0;
+	}
+
+	if (!this->initSockPoll()) {
+		sockError = -3;
+		return;
+	}
+	else {
+		sockError = 0;
+	}
 }
 
 //* Paramaterized Constructor
 // @param IP: IP Address
 // @param Port: IP Address Port
 WebFB::WebFB(std::string IP, std::string Port)
-	: sockIP(IP), sockPort((std::uint16_t)strtoul(std::string(DEFAULT_PORT).c_str(), NULL, 0)), sockFD(-1), sockError(0) {
+	: sockIP(IP), sockPort((std::uint16_t)strtoul(std::string(DEFAULT_PORT).c_str(), NULL, 0)), sockFD(-1), sockError(69) {
 
-	sockError = (!this->mkSock()) ? -1 : 0;
-	sockError = (!this->sockConnect()) ? -2 : 0;
-	sockError = (!this->initSockPoll()) ? -3 : 0;
+	if (!this->mkSock()) {
+		sockError = -1;
+		return;
+	}
+	else {
+		sockError = 0;
+	}
+
+	if (!this->sockConnect()) {
+		sockError = -2;
+		return;
+	}
+	else {
+		sockError = 0;
+	}
+
+	if (!this->initSockPoll()) {
+		sockError = -3;
+		return;
+	}
+	else {
+		sockError = 0;
+	}
 }
 
 //* Destructor
@@ -56,9 +96,9 @@ WebFB::~WebFB() { close(this->sockFD); }
 
 //* Creates Socket
 //? Returns 0 when failure
-int WebFB::mkSock() {
+bool WebFB::mkSock() {
 	this->sockFD = socket(AF_INET, SOCK_STREAM, 0);
-	return (int)!(this->sockFD == -1);
+	return !(this->sockFD == -1);
 }
 
 //* Connects to WebFB
@@ -88,4 +128,4 @@ int WebFB::initSockPoll() {
 	return !(sigprocmask(SIG_BLOCK, NULL, &(this->sockSigMask)) < 0);
 }
 
-std::uint32_t WebFB::getErr() { return this->sockError; }
+int WebFB::getErr() { return this->sockError; }

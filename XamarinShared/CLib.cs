@@ -21,6 +21,6 @@ namespace NativeCLib
         [DllImport("libCLib", EntryPoint = "destruct")] public static extern void destruct(IntPtr wfb);
 
         //WebFB Setters
-        [DllImport("libCLib", EntryPoint = "getWFBErr")] public static extern UInt32 getErr(IntPtr wfb);
+        [DllImport("libCLib", EntryPoint = "getWFBErr")] public static extern int getErr(IntPtr wfb);
     }
 }
