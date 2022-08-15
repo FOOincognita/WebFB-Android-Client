@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:theme="@android:style/Theme.NoTitleBar"
+    android:orientation="vertical"
+    android:background="@android:color/black"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <EditText
+        android:theme="@android:style/Theme.Holo"
+        android:textColor="@android:color/white"
+        android:textAlignment="center"
+        android:inputType="number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/left"
+        android:hint="Left Value" />
+    <EditText
+        android:theme="@android:style/Theme.Holo"
+        android:textColor="@android:color/white"
+        android:textAlignment="center"
+        android:inputType="number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/right"
+        android:hint="Right Value" />
+    <TextView
+        android:text="@string/TextResult"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/white"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/result" />
+    <Button
+        android:id="@+id/MyButton"
+        android:theme="@android:style/Theme.Holo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ButtonResult" />
+    <Switch
+        android:theme="@android:style/Theme.Holo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch1" />
+</LinearLayout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ButtonResult">Get Result</string>
+	<string name="TextResult">Result</string>
+    <string name="ApplicationName">Droid</string>
+</resources>
