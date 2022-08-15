@@ -26,37 +26,35 @@ namespace Droid
 
             button.Click += (sender, args) =>
             {
-                //IntPtr wfbObj = WebFB.InitParams(420, "InitStrVal");
-
-                //string tstStr = Marshal.PtrToStringAnsi(WebFB.getStr(wfbObj)) + "; ";
-                //WebFB.setStr(wfbObj, "NewStrVal");
-
-                //tstStr += Marshal.PtrToStringAnsi(WebFB.getStr(wfbObj));
-
-
                 // var left = int.Parse(FindViewById<EditText>(Resource.Id.left).Text);
                 // var right = int.Parse(FindViewById<EditText>(Resource.Id.right).Text);
 
-                string left = FindViewById<EditText>(Resource.Id.left).Text;
-                string right = FindViewById<EditText>(Resource.Id.right).Text;
+                string IP;
+                string Port;
 
-                FindViewById<TextView>(Resource.Id.result).Text = (left + "; " + right); //CLib.Sub(left, right)
-
-                /*
-                catch 
+                try
+                {
+                    IP = FindViewById<EditText>(Resource.Id.left).Text;
+                    Port = FindViewById<EditText>(Resource.Id.right).Text;
+                }
+                catch
                 { // SHOW DIALOG BOX ON EXCEPTION
                     // Theme Chnage??
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                     AlertDialog alert = dialog.Create();
                     alert.SetTitle("Invalid Input");
-                    alert.SetMessage("Please Enter Integer In Each Container");
-                    alert.SetButton("OK", (c, ev) =>
-                    {
-                        // Ok button click task  
-                    });
+                    alert.SetMessage("Please Enter Value Into Each Line");
+                    alert.SetButton("OK", (c, ev) => { });
                     alert.Show();
+
+                    return;
                 }
-                */
+
+                IntPtr wfbObj = WebFB.InitParams(IP, Port);
+
+                FindViewById<TextView>(Resource.Id.result).Text = Convert.ToString(WebFB.getErr(wfbObj)); 
+
+                WebFB.destruct(wfbObj);
                     
             };
         }

@@ -32,7 +32,7 @@ void WebFB::setStr(std::string s) { this->str = s;  }
 
 //* Default Constructor
 WebFB::WebFB()
-	: sockIP(DEFAULT_IP), sockPort(stous(DEFAULT_PORT)), sockFD(-1), sockPKT(0), sockError(0) {
+	: sockIP(DEFAULT_IP), sockPort((std::uint16_t)strtoul(std::string(DEFAULT_PORT).c_str(), NULL, 0)), sockFD(-1), sockError(0) {
 
 	sockError = (!this->mkSock()) ? -1 : 0;
 	sockError = (!this->sockConnect()) ? -2 : 0;
@@ -43,7 +43,7 @@ WebFB::WebFB()
 // @param IP: IP Address
 // @param Port: IP Address Port
 WebFB::WebFB(std::string IP, std::string Port)
-	: sockIP(IP), sockPort(stous(Port)), sockFD(-1), sockPKT(0), sockError(0) {
+	: sockIP(IP), sockPort((std::uint16_t)strtoul(std::string(DEFAULT_PORT).c_str(), NULL, 0)), sockFD(-1), sockError(0) {
 
 	sockError = (!this->mkSock()) ? -1 : 0;
 	sockError = (!this->sockConnect()) ? -2 : 0;
