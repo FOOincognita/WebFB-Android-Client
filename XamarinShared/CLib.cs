@@ -22,5 +22,6 @@ namespace NativeCLib
 
         //WebFB Setters
         [DllImport("libCLib", EntryPoint = "getWFBErr")] public static extern int getErr(IntPtr wfb);
+        [DllImport("libCLib", EntryPoint = "getWFBLatData")] public static extern double getLat(IntPtr wfb);
     }
 }

@@ -13,6 +13,7 @@ namespace Droid
     [Activity(Label = "Test App", MainLauncher = true, Icon = "@drawable/icon", Theme = "@android:style/Theme.NoTitleBar")]
     public class MainActivity : Activity
     {
+        IntPtr wfbObj;
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -23,6 +24,8 @@ namespace Droid
             // Get our button from the layout resource,
             
             var button = FindViewById<Button>(Resource.Id.MyButton);
+            var latButton = FindViewById<Button>(Resource.Id.LatButton);
+            var destrButton = FindViewById<Button>(Resource.Id.destructButton);
 
             button.Click += (sender, args) =>
             {
@@ -50,12 +53,21 @@ namespace Droid
                     return;
                 }
 
-                IntPtr wfbObj = WebFB.InitParams(IP, Port);
+                wfbObj = WebFB.InitParams(IP, Port);
 
                 FindViewById<TextView>(Resource.Id.result).Text = Convert.ToString(WebFB.getErr(wfbObj)); 
-
-                WebFB.destruct(wfbObj);
                     
+            };
+            // Get Lat Button
+            latButton.Click += (sender, args) => 
+            {
+                FindViewById<TextView>(Resource.Id.LatText).Text = Convert.ToString(WebFB.getLat(wfbObj));
+            };
+            // Close Socket Button
+            latButton.Click += (sender, args) => 
+            {
+                WebFB.destruct(wfbObj);
+                FindViewById<TextView>(Resource.Id.closeSockText).Text = "Success";
             };
         }
     }

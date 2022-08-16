@@ -1,9 +1,10 @@
-//#pragma once
-#pragma comment(lib "BTICARD.lib")
+#pragma once
+
 #include <stdint.h>
 #include <string>
 #include <cstring>
-
+#include <poll.h>
+#include <math.h>
 #include <iostream>
 #include <string.h>
 #include <strings.h>
@@ -11,15 +12,14 @@
 #include <stdexcept>
 #include <bitset>
 #include <iomanip>
+#include <time.h>
 #include <cstdint>
 #include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <unordered_map>
-#include <termios.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <time.h>
 #include <errno.h>
 #include <sys/poll.h>
 #include <sys/eventfd.h>
@@ -30,48 +30,15 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/cdefs.h>
+#include <linux/poll.h>
 
-#include "..\..\..\BTICard.h"
-#include "..\..\..\BTICARD.lib"
+#include <BTICard.h>
+#include "global.h"
 
-//*	Definitions
-//? WebFB Default Values
-#define DEFAULT_IP	  "172.31.1.1"
-#define DEFAULT_PORT  "10001"
-#define MAXPKT		  16384
-#define MAX_WPS    	  8192
-#define TIMEOUT		  5
+ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype);
+ERRVAL BTIUTIL_SeqFindNext(LPUINT16* pRecord, LPUINT16 seqtype, LPSEQFINDINFO sfinfo);
 
-// Typedefs
-typedef double latitude_t;
-typedef unsigned long ulong32_t;
-typedef struct manage_t {
-	std::uint16_t  buf[MAXPKT];    // Data Buffer
-} manage_t;
-
-/*
-// Working Testers
-int32_t clib_add_internal(int32_t left, int32_t right);
-int32_t clib_sub_internal(int32_t left, int32_t right);
-char* clib_str_internal();
-//////////////////////////////////////////////////////////
-
-class WebFB {
-	int num;
-	std::string str;
-public:
-	WebFB();
-	WebFB(int n, std::string s);
-
-	int getNum();
-	char* getStr();
-
-	void setNum(int n);
-	void setStr(std::string s);
-};
-*/
-
-//////////////////////////////////////////////////////////
 
 // WebFB Class
 class WebFB {
@@ -84,6 +51,7 @@ private:
     std::size_t		sockFD;
     std::string    	sockIP;
     std::uint16_t  	sockPort;
+    std::uint32_t	sockPKT;
 
 public:
     WebFB();
@@ -95,6 +63,12 @@ public:
     int initSockPoll();
 
     int getErr();
+
+    int rdSockData(std::uint16_t* pbuf, std::uint32_t bufsize);
+    int sockPoll();
+    std::string ParsePKTS(LPUINT16 buf, std::uint32_t wordcount, std::string lbl);
+    std::string GetArincData(std::string lbl);
+    latitude_t GetLatData();
 };
 
 

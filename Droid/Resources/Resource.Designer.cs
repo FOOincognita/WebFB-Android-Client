@@ -59,20 +59,29 @@ namespace Droid
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7F020001
-			public const int left = 2130837505;
-			
-			// aapt resource value: 0x7F020000
-			public const int MyButton = 2130837504;
-			
-			// aapt resource value: 0x7F020002
-			public const int result = 2130837506;
-			
 			// aapt resource value: 0x7F020003
-			public const int right = 2130837507;
+			public const int closeSockText = 2130837507;
 			
 			// aapt resource value: 0x7F020004
-			public const int switch1 = 2130837508;
+			public const int destructButton = 2130837508;
+			
+			// aapt resource value: 0x7F020000
+			public const int LatButton = 2130837504;
+			
+			// aapt resource value: 0x7F020001
+			public const int LatText = 2130837505;
+			
+			// aapt resource value: 0x7F020005
+			public const int left = 2130837509;
+			
+			// aapt resource value: 0x7F020002
+			public const int MyButton = 2130837506;
+			
+			// aapt resource value: 0x7F020006
+			public const int result = 2130837510;
+			
+			// aapt resource value: 0x7F020007
+			public const int right = 2130837511;
 			
 			static Id()
 			{
