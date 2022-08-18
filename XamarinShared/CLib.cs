@@ -12,16 +12,20 @@ namespace NativeCLib
         // Marshal.PtrToStringAnsi(CLib.CStr(string)) <- IntPtr to Str
 
         // WebFB Constructors
-        [DllImport("libCLib", EntryPoint = "create")] public static extern IntPtr Init();
+        [DllImport("libCLib", EntryPoint = "create")] 
+        public static extern IntPtr Init();
 
         [DllImport("libCLib", EntryPoint = "createParams")] 
         public static extern IntPtr InitParams([MarshalAs(UnmanagedType.LPStr)] string IP, [MarshalAs(UnmanagedType.LPStr)] string Port); 
 
         // WebFB Destructor
-        [DllImport("libCLib", EntryPoint = "destruct")] public static extern void destruct(IntPtr wfb);
+        [DllImport("libCLib", EntryPoint = "destruct")] 
+        public static extern void destruct(IntPtr wfb);
 
         //WebFB Setters
-        [DllImport("libCLib", EntryPoint = "getWFBErr")] public static extern int getErr(IntPtr wfb);
-        [DllImport("libCLib", EntryPoint = "getWFBLatData")] public static extern double getLat(IntPtr wfb);
+        [DllImport("libCLib", EntryPoint = "getWFBErr")] 
+        public static extern int getErr(IntPtr wfb);
+        [DllImport("libCLib", EntryPoint = "getWFBLatData")] 
+        public static extern double getLat(IntPtr wfb);
     }
 }

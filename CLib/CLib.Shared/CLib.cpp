@@ -2,7 +2,7 @@
 
 //* Default Constructor
 WebFB::WebFB()
-	: sockIP(DEFAULT_IP), sockPort((std::uint16_t)strtoul(std::string(DEFAULT_PORT).c_str(), NULL, 0)), sockFD(-1), sockError(0), sockPKT(0) {
+	: sockIP(DEFAULT_IP), sockPort(UINT16_PORT), sockFD(-1), sockError(0), sockPKT(0) {
 
 	if (!this->mkSock()) {
 		sockError = -1;
@@ -33,7 +33,7 @@ WebFB::WebFB()
 // @param IP: IP Address
 // @param Port: IP Address Port
 WebFB::WebFB(std::string IP, std::string Port)
-	: sockIP(IP), sockPort((std::uint16_t)strtoul(std::string(DEFAULT_PORT).c_str(), NULL, 0)), sockFD(-1), sockError(0), sockPKT(0) {
+	: sockIP(IP), sockPort(strtoui16(Port)), sockFD(-1), sockError(0), sockPKT(0) {
 
 	if (!this->mkSock()) {
 		sockError = -1;
@@ -193,13 +193,8 @@ std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) 
 	LPSEQRECORD429    pRec429;
 	std::stringstream ss;
 
-	if (BTICard_SeqFindInit(buf, wordcount, &sfinfo)) {
-		//? syslog(LOG_ERR,"ParsePackets - SeqFindInit Failed (%i)", errval);
-		return "";
-	}
+	if (this->SeqFindInit(buf, wordcount, &sfinfo)) { return ""; }
 
-	//	Walk the record stream using our modified find-next method
-	//	printf("%sHEX: 0x%s %s\n", C, hexStr.c_str(), RST);
 	while (!BTIUTIL_SeqFindNext(&pRec, &seqtype, &sfinfo)) {
 		if (seqtype == SEQTYPE_429) {
 			pRec429 = (LPSEQRECORD429)pRec;
@@ -209,9 +204,7 @@ std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) 
 			ss << std::hex << ntohl(pRec429->data);
 			hexStr = ss.str();
 
-			if (hexStr.size() == 8 && hexStr.substr(hexStr.length() - 2) == lbl) {
-				return hexStr;
-			}
+			if (hexStr.size() == 8 && hexStr.substr(hexStr.length() - 2) == lbl) { return hexStr; }
 		}
 	}
 	return "";
@@ -234,6 +227,16 @@ latitude_t WebFB::GetLatData() {
 		}
 	}
 }
+// ERRVAL                       LPUINT16               ULONG
+std::int32_t WebFB::SeqFindInit(std::uint16_t* seqbuf, std::uint32_t seqbufsize, LPSEQFINDINFO sfinfo) {
+	if (!sfinfo) { return 0xffffffae; }
+
+	*(int32_t*)sfinfo = *seqbuf; ///!!!!!!!
+	sfinfo->pRecNext = seqbuf;
+	sfinfo->pRecLast = seqbuf + (seqbufsize << 1);
+
+	return 0;
+}
 
 ///////////////////////////////////////////////////////////////////
 ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype) {
@@ -243,22 +246,19 @@ ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype) {
 }
 
 ERRVAL BTIUTIL_SeqFindNext(LPUINT16* pRecord, LPUINT16 seqtype, LPSEQFINDINFO sfinfo) {
-	ERRVAL errval;
-	LPUINT16 pSeqBuf;
+	ERRVAL		errval;
+	LPUINT16	pSeqBuf;
 
 	if (!sfinfo) return(ERR_SEQFINDINFO);
 
 	for (pSeqBuf = sfinfo->pRecNext; pSeqBuf < sfinfo->pRecLast;) {
 		// Check for a known record type
 		errval = BTIUTIL_SeqFindCheckValidType(pSeqBuf[0]);
-		if (errval) {
-			return(errval);
-		}
+		if (errval) return(errval); 
 
-		//Advance the pointer in the sfinfo struct
 		sfinfo->pRecNext += pSeqBuf[1];
 
-		if (pRecord) *pRecord = pSeqBuf;
+		if (pRecord) *pRecord = pSeqBuf; 
 		if (seqtype) *seqtype = pSeqBuf[0] & SEQTYPE_MASK;
 
 		return(ERR_NONE);

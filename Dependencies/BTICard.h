@@ -1,10 +1,10 @@
 /**
 *
-*  BTICard Host Linux Driver  Version 2.15.0  (10/28/2020)
-*  Copyright (c) 2001-2020
+*  BTICard Host Linux Driver  Version 2.6.1  (07/18/2014)
+*  Copyright (c) 2001-2014
 *  Ballard Technology, Inc.
-*  www.astronics.com
-*  Ballard.Support@astronics.com
+*  www.ballardtech.com
+*  support@ballardtech.com
 *  ALL RIGHTS RESERVED
 *
 *  NAME:   BTICard.H -- Linux
@@ -99,20 +99,12 @@
 #define LPUINT32 unsigned int *
 #endif
 
-#ifndef INT64
-#define INT64 long long
-#endif
-
-#ifndef LPINT64
-#define LPINT64 long long *
-#endif
-
 #ifndef UINT64
 #define UINT64 unsigned long long
 #endif
 
-#ifndef LPUINT64
-#define LPUINT64 unsigned long long *
+#ifndef PUINT64
+#define PUINT64 unsigned long long *
 #endif
 
 #ifndef ULONG_PTR
@@ -149,10 +141,6 @@
 
 #ifndef BOOL
 #define BOOL int
-#endif
-
-#ifndef LPBOOL
-#define LPBOOL int *
 #endif
 
 #ifndef HCARD
@@ -324,14 +312,14 @@ typedef struct
 {
 	UINT16  type;               //Valid in all versions
 	UINT16  count;              //Valid in all versions
-	UINT16  activity;           //Valid in all versions
-	UINT16  error;              //Valid in all versions
 	UINT32   timestamp;          //Valid in all versions
 	UINT32   timestamph;         //Valid in all versions
+	UINT16  activity;           //Valid in all versions
+	UINT16  error;              //Valid in all versions
 	UINT16  cwd;                //Valid in all versions
-	UINT16  cwdinfo;            //Valid in all versions
+	UINT16  cwdlink;            //Valid in all versions
 	UINT16  swd;                //Valid in all versions
-	UINT16  swdinfo;            //Valid in all versions
+	UINT16  swdlink;            //Valid in all versions
 	UINT16  resptime;           //Valid in all versions
 	UINT16  datacount;          //Valid in all versions
 	UINT16  data[40];           //Variable length (don't exceed data[datacount-1])
@@ -364,6 +352,7 @@ typedef struct
 	UINT16  sec;
 	UINT16  msec;
 	UINT16  usec;
+	UINT16  nsec;
 } BTIIRIGTIME;
 #endif
 
@@ -449,7 +438,6 @@ BTICardAPI ERRVAL BTICard_CardStart(HCORE handleval);
 BTICardAPI BOOL BTICard_CardStop(HCORE handleval);
 BTICardAPI VOID BTICard_CardSyncEnable(BOOL enableflag,UINT16 syncmask,UINT16 pinpolarity,HCORE handleval);
 BTICardAPI UINT16 BTICard_CardSyncValid(HCORE handleval);
-BTICardAPI ERRVAL BTICard_CardSyncValidEx(LPUINT16 maskout,UINT16 maskin,HCORE handleval);
 BTICardAPI ERRVAL BTICard_CardTest(UINT16 level,HCORE handleval);
 BTICardAPI ERRVAL BTICard_CardTest0(HCORE handleval);
 BTICardAPI ERRVAL BTICard_CardTest1(HCORE handleval);
@@ -460,7 +448,6 @@ BTICardAPI VOID BTICard_CardTriggerEnable(BOOL enableflag,HCORE handleval);
 BTICardAPI VOID BTICard_CardTriggerEnableEx(BOOL enableflag,UINT16 trigmask,UINT16 pinpolarity,HCORE handleval);
 BTICardAPI VOID BTICard_CardTriggerEx(UINT16 trigmask,HCORE handleval);
 BTICardAPI UINT16 BTICard_CardTriggerValid(HCORE handleval);
-BTICardAPI ERRVAL BTICard_CardTriggerValidEx(LPUINT16 maskout,UINT16 maskin,HCORE handleval);
 BTICardAPI LPCSTR BTICard_CardTypeStr(HCORE handleval);
 BTICardAPI VOID BTICard_ChDARClr(UINT16 maskval,UINT16 addrval,INT channum,HCORE handleval);
 BTICardAPI BOOL BTICard_ChDARGet(UINT16 maskval,UINT16 addrval,INT channum,HCORE handleval);
@@ -538,11 +525,10 @@ BTICardAPI VOID BTICard_ExtDIOEnWr(INT dionum,BOOL dioval,BOOL dioen,HCORE handl
 BTICardAPI ERRVAL BTICard_ExtDIOMonConfig(UINT16 rise_edge,UINT16 fall_edge,INT banknum,HCORE handleval);
 BTICardAPI BOOL BTICard_ExtDIORd(INT dionum,HCORE handleval);
 BTICardAPI VOID BTICard_ExtDIOWr(INT dionum,BOOL dioval,HCORE handleval);
-BTICardAPI ERRVAL BTICard_ExtDIOBankConfig(UINT32 configtype, UINT16 configmask, INT banknum, HCORE handleval);
-BTICardAPI INT BTICard_ExtLEDRd(HCORE handleval);
-BTICardAPI VOID BTICard_ExtLEDWr(INT ledval,HCORE handleval);
+BTICardAPI BOOL BTICard_ExtLEDRd(HCORE handleval);
+BTICardAPI VOID BTICard_ExtLEDWr(BOOL ledval,HCORE handleval);
 BTICardAPI VOID BTICard_ExtStatusLEDRd(LPINT ledon,LPINT ledcolor,HCORE handleval);
-BTICardAPI VOID BTICard_ExtStatusLEDWr(INT ledon,INT ledcolor,HCORE handleval);
+BTICardAPI VOID BTICard_ExtStatusLEDWr(BOOL ledon,BOOL ledcolor,HCORE handleval);
 BTICardAPI VOID BTICard_FileClose(LPVOID handle);
 BTICardAPI BOOL BTICard_FileErr(VOID);
 BTICardAPI VOID BTICard_FileErrClr(VOID);
@@ -557,14 +543,9 @@ BTICardAPI ERRVAL BTICard_FPGAAdd(LPCSTR filename,HCORE handleval);
 BTICardAPI ERRVAL BTICard_FPGAInfoRd(LPUINT16 buf,HCORE handleval);
 BTICardAPI ERRVAL BTICard_FPGAWipe(HCORE handleval);
 BTICardAPI UINT16 BTICard_GetHigh(UINT32 val);
-BTICardAPI UINT32 BTICard_GetHighL(UINT64 val);
 BTICardAPI UINT16 BTICard_GetLow(UINT32 val);
-BTICardAPI UINT32 BTICard_GetLowL(UINT64 val);
-BTICardAPI UINT32 BTICard_GetTickCount();
 BTICardAPI UINT16 BTICard_GlobalRdW(UINT16 addrval,HCORE handleval);
 BTICardAPI VOID BTICard_GlobalWrW(UINT16 value,UINT16 addrval,HCORE handleval);
-BTICardAPI ERRVAL BTICard_HandleDisableSet(BOOL flag,HCARD handleval);
-BTICardAPI ERRVAL BTICard_HandleIgnoreSet(BOOL flag,HCARD handleval);
 BTICardAPI ERRVAL BTICard_HandleInfo(LPSTR cardstr,LPINT cardnum,LPUINT32 sizval,LPVOID *vxdptr,HCORE handleval);
 BTICardAPI ERRVAL BTICard_HandleInfoEx(LPUINT32 valueptr,UINT32 type,HCORE handleval);
 BTICardAPI BOOL BTICard_HandleIsCard(HCARD handleval);
@@ -600,7 +581,7 @@ BTICardAPI VOID BTICard_HPIWrL(UINT32 value,UINT16 addrval,HCORE handleval);
 BTICardAPI VOID BTICard_HPIWrsL(LPUINT32 valueptr,UINT16 addrval,INT countval,HCORE handleval);
 BTICardAPI VOID BTICard_HPIWrsW(LPUINT16 valueptr,UINT16 addrval,INT countval,HCORE handleval);
 BTICardAPI VOID BTICard_HPIWrW(UINT16 value,UINT16 addrval,HCORE handleval);
-BTICardAPI ERRVAL BTICard_Identify(LPBTIIDENTIFY infoptr,HCARD handleval);
+BTICardAPI ERRVAL BTICard_Identify(LPBTIIDENTIFY info,HCARD handleval);
 BTICardAPI UINT16 BTICard_IDRegRd(INT gate_array_num,HCORE handleval);
 BTICardAPI VOID BTICard_IDRegWr(UINT16 value,INT gate_array_num,HCORE handleval);
 BTICardAPI VOID BTICard_IntClear(HCORE handleval);
@@ -611,16 +592,11 @@ BTICardAPI INT BTICard_IntGet(HCORE handleval);
 BTICardAPI ERRVAL BTICard_IntInstall(LPVOID hEvent,HCORE handleval);
 BTICardAPI VOID BTICard_IntReset(HCORE handleval);
 BTICardAPI ERRVAL BTICard_IntUninstall(HCORE handleval);
-BTICardAPI ERRVAL BTICard_IntVerify(LPUINT32 valueptr,HCORE handleval);
 BTICardAPI UINT32 BTICard_IORdL(INT addrval,HCORE handleval);
-BTICardAPI VOID BTICard_IORdsL(LPUINT32 valueptr,UINT32 addrval,INT countval,HCORE handleval);
-BTICardAPI VOID BTICard_IORdsW(LPUINT16 valueptr,UINT32 addrval,INT countval,HCORE handleval);
 BTICardAPI UINT16 BTICard_IORdW(INT addrval,HCORE handleval);
 BTICardAPI UINT16 BTICard_IOWINRdW(INT addrval,HCORE handleval);
 BTICardAPI VOID BTICard_IOWINWrW(UINT16 value,INT addrval,HCORE handleval);
 BTICardAPI VOID BTICard_IOWrL(UINT32 value,INT addrval,HCORE handleval);
-BTICardAPI VOID BTICard_IOWrsL(LPUINT32 valueptr,UINT32 addrval,INT countval,HCORE handleval);
-BTICardAPI VOID BTICard_IOWrsW(LPUINT16 valueptr,UINT32 addrval,INT countval,HCORE handleval);
 BTICardAPI VOID BTICard_IOWrW(UINT16 value,INT addrval,HCORE handleval);
 BTICardAPI ERRVAL BTICard_IRIGConfig(UINT32 configval,HCORE handleval);
 BTICardAPI UINT32 BTICard_IRIGFieldGetDays(UINT32 irigvalh,UINT32 irigvall);
@@ -651,7 +627,6 @@ BTICardAPI ERRVAL BTICard_KernStatus(LPULONG_PTR valueptr,UINT32 type,HCARD hand
 BTICardAPI ERRVAL BTICard_KernStatusEx(LPULONG_PTR valueptr,UINT32 type,UINT32 index,HCARD handleval);
 BTICardAPI LPVOID BTICard_KernUSBKillWorker(HCARD handleval);
 BTICardAPI UINT32 BTICard_MakeLong(UINT16 valh,UINT16 vall);
-BTICardAPI UINT64 BTICard_MakeQuad(UINT32 valh,UINT32 vall);
 BTICardAPI UINT16 BTICard_MakeWord(BYTE valh,BYTE vall);
 BTICardAPI LPSTR BTICard_MantToAscii(LPSTR buf,INT mant,INT exp);
 BTICardAPI UINT32 BTICard_Mask(UINT32 dataval,UINT16 cntval);
@@ -666,14 +641,13 @@ BTICardAPI VOID BTICard_PortWr(UINT16 value,INT addrval,HCORE handleval);
 BTICardAPI ERRVAL BTICard_ProcCall(UINT32 useraddr,HCORE handleval);
 BTICardAPI UINT32 BTICard_ProcLoad(LPUINT16 userbuf,UINT16 count,HCORE handleval);
 BTICardAPI VOID BTICard_ProcLoc(LPUINT16 inputcode,LPUINT16 outputcode,UINT16 inputbase,UINT16 outputbase,INT count);
-BTICardAPI ERRVAL BTICard_ProcRun(LPUINT16 userbuf,UINT16 count,HCORE handleval);
+BTICardAPI ERRVAL BTICard_ProcRun(LPVOID userbuf,UINT16 count,HCORE handleval);
 BTICardAPI ERRVAL BTICard_ProcSetFore(UINT32 useraddr,HCORE handleval);
 BTICardAPI ERRVAL BTICard_ProcSetInt(UINT16 useraddr,INT intnum,UINT16 intmask,HCORE handleval);
 BTICardAPI ERRVAL BTICard_ProcSetPost(UINT32 useraddr,UINT32 msgaddr,INT channum,HCORE handleval);
 BTICardAPI ERRVAL BTICard_ProcSetPre(UINT32 useraddr,UINT32 msgaddr,INT channum,HCORE handleval);
 BTICardAPI UINT16 BTICard_ProgRdW(UINT32 addrval,HCORE handleval);
 BTICardAPI VOID BTICard_ProgWrW(UINT16 value,UINT32 addrval,HCORE handleval);
-BTICardAPI ERRVAL BTICard_PXIStatus(LPUINT32 infoptr,UINT16 infotype,HCORE handleval);
 BTICardAPI VOID BTICard_RAMFill(UINT16 value,UINT32 addrval,UINT32 countval,HCORE handleval);
 BTICardAPI UINT16 BTICard_RAMRdB(UINT32 addrval,HCORE handleval);
 BTICardAPI UINT32 BTICard_RAMRdL(UINT32 addrval,HCORE handleval);
@@ -759,14 +733,13 @@ BTICardAPI ERRVAL BTICard_SysMonInit(HCORE handleval);
 BTICardAPI INT BTICard_SysMonMaxRd(INT index,HCORE handleval);
 BTICardAPI INT BTICard_SysMonMinRd(INT index,HCORE handleval);
 BTICardAPI INT BTICard_SysMonNomRd(INT index,HCORE handleval);
-BTICardAPI ERRVAL BTICard_SysMonThresholdGet(LPBOOL enable,LPINT min,LPINT max,INT index,HCORE handleval);
+BTICardAPI ERRVAL BTICard_SysMonThresholdGet(BOOL * enable,LPINT min,LPINT max,INT index,HCORE handleval);
 BTICardAPI ERRVAL BTICard_SysMonThresholdSet(BOOL enable,INT min,INT max,INT index,HCORE handleval);
 BTICardAPI UINT32 BTICard_SysMonTypeGet(INT index,HCORE handleval);
 BTICardAPI LPCSTR BTICard_SysMonUserStr(INT value,INT index,HCORE handleval);
 BTICardAPI INT BTICard_SysMonValRd(INT index,HCORE handleval);
 BTICardAPI LPCSTR BTICard_SysMonValStr(INT index,HCORE handleval);
 BTICardAPI UINT16 BTICard_SysMonValToDAC(INT val,INT rangemin,INT rangemax,UINT16 dacval_max,INT scalefactor,HCARD handleval);
-BTICardAPI INT BTICard_TickTimerRemaining(INT timer);
 BTICardAPI INT BTICard_TickTimerStart(INT milliseconds);
 BTICardAPI BOOL BTICard_TickTimerValid(INT timer);
 BTICardAPI ERRVAL BTICard_Timer64Rd(LPUINT32 valueh,LPUINT32 valuel,HCORE handleval);
@@ -777,33 +750,6 @@ BTICardAPI INT BTICard_TimerResolution(INT timerresol,HCORE handleval);
 BTICardAPI UINT16 BTICard_TimerResolutionEx(UINT16 timershift,HCORE handleval);
 BTICardAPI INT BTICard_TimerStatus(HCORE handleval);
 BTICardAPI VOID BTICard_TimerWr(UINT32 value,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMDriftMaxGet(LPUINT32 driftptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMDriftMaxSet(UINT32 drift,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMDriftRd(LPINT driftptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMDriftRelWr(INT drift,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMDriftWr(INT drift,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMInputDelayCompGet(LPINT delayptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMInputDelayCompSet(INT delay,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMInputThresholdAuto(INT pinindex,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMInputThresholdGet(LPUINT16 dacval,INT pinindex,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMInputThresholdSet(UINT16 dacval,INT pinindex,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMIntTrigger(LPUINT64 timetagptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMIRIGControlRd(LPUINT32 ctrlptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMIRIGControlWr(UINT32 ctrlval,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMIRIGYearsRd(LPUINT32 year,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMIRIGYearsWr(UINT32 year,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMJumpThresholdGet(LPUINT32 drift,LPUINT32 offset,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMJumpThresholdSet(UINT32 drift,UINT32 offset,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMOffsetLastRd(LPINT64 offsetptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMReset(HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMSourceConfig(UINT32 sourcecfg,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMStatus(LPUINT32 statusptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMSyncConfig(UINT32 timeconfig,UINT32 driftconfig,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMTimerRd(LPUINT64 valueptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMTimerRelWr(INT64 value,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMTimerRolloverGet(LPUINT64 valueptr,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMTimerRolloverSet(UINT64 value,HCORE handleval);
-BTICardAPI ERRVAL BTICard_TSMTimerWr(UINT64 value,HCORE handleval);
 BTICardAPI INT BTICard_ValAsciiCmpi(LPSTR str1,LPSTR str2);
 BTICardAPI LPSTR BTICard_ValAsciiCpy(LPSTR strdest,LPCSTR strsrc,INT count);
 BTICardAPI VOID BTICard_ValAsciiTrimLead(LPSTR buf);
@@ -877,7 +823,7 @@ enum {	SEQCFG_DEFAULT     = 0x00000000L,          //Select all default settings
 		SEQCFG_LOGFULL     = 0x00001000L,          //Generate event log when sequential record is full
 		SEQCFG_NOLOGFREQ   = 0x00000000L,          //Do not generate event logs at a user specified frequency (default)
 		SEQCFG_LOGFREQ     = 0x00002000L,          //Generate event logs at user specified frequency
-		SEQCFG_TCPNODELAY  = 0x00004000L,          //Disable Nagle's algorithm on sequential DMA for RPC devices
+		SEQCFG_TCPNODELAY  = 0x00004000L,          //Disable Nagle's algorithm on sequental DMA for RPC devices
 		SEQCFG_16K         = 0x00000000L,          //Allocate a 16K sequential record buffer (default)
 		SEQCFG_ALLAVAIL    = 0x01000000L,          //Allocate all available memory to a sequential record buffer
 		SEQCFG_32K         = 0x02000000L,          //Allocate a 32K sequential record buffer
@@ -900,8 +846,6 @@ enum {	SEQTYPE_MASK       = 0x00FF,               //Sequential record type mask 
 		SEQTYPE_CSDB       = 0x0006,               //Sequential record type is CSDB
 		SEQTYPE_DIO        = 0x0007,               //Sequential record type is DIO
 		SEQTYPE_EBR        = 0x0008,               //Sequential record type is EBR-1553
-		SEQTYPE_717SF      = 0x0009,               //Sequential record type is ARINC 717 Subframe
-		SEQTYPE_PMC10      = 0x000A,               //Sequential record type is PMC10
 		SEQTYPE_RESTART    = 0x00FF                //Sequential record type is Restart
 };
 
@@ -944,7 +888,7 @@ enum {	IRIGCFG_DEFAULT    = 0x00000000L,          //Select all default settings
 		IRIGCFG_MASTER     = 0x00000008L,          //IRIG timer is a master / transmitter
 		IRIGCFG_PPS        = 0x00000010L,          //IRIG timer operates in PPS mode (rcv/xmt)
 		IRIGCFG_PWM        = 0x00000000L,          //IRIG timer uses pulse width modulated signaling (rcv/xmt) (default)
-		IRIGCFG_AM         = 0x00000020L           //IRIG timer uses amplitude modulated signaling (rcv/xmt, hw dependant)
+		IRIGCFG_AM         = 0x00000020L           //IRIG timer uses amplitude modulated signaling (rcv only, hw dependant)
 };
 
 /**
@@ -1079,14 +1023,7 @@ enum {	EVENTTYPE_1553MSG    = 0x0001,             //MIL-STD-1553 message
 		EVENTTYPE_DIOEDGE     = 0x0060,            //DIO edge event
 		EVENTTYPE_DIOFAULT    = 0x0061,            //DIO fault event
 
-		EVENTTYPE_BITERROR    = 0x0071,            //Built-in Test error event
-
-		EVENTTYPE_EBRMSG    = 0x0081,              //EBR message
-		EVENTTYPE_EBROPCODE = 0x0082,              //EBR event log opcode
-		EVENTTYPE_EBRHALT   = 0x0083,              //EBR schedule halt
-		EVENTTYPE_EBRPAUSE  = 0x0084,              //EBR schedule pause
-		EVENTTYPE_EBRLIST   = 0x0085,              //EBR list buffer empty/full
-		EVENTTYPE_EBRRESV   = 0x0086               //EBR Reserved
+		EVENTTYPE_BITERROR    = 0x0071             //Built-in Test error event
 };
 
 /**
@@ -1117,10 +1054,7 @@ enum {	INFOTYPE_PLAT      = 0x0001,               //Returns the platform type
 		INFOTYPE_DIOSIZE   = 0x0014,               //Returns the DIO bank size
 		INFOTYPE_HWGEN     = 0x0015,               //Returns the Hardware Generation
 		INFOTYPE_EBRCOUNT  = 0x0016,               //Returns the EBR channel count
-		INFOTYPE_EBRSIZE   = 0x0017,               //Returns the EBR channel size
-		INFOTYPE_CARDTYPE  = 0x0018,               //Returns the card type
-		INFOTYPE_SERIALNUM = 0x0019,               //Returns the serial number
-		INFOTYPE_VERSIONEX = 0x001A                //Returns the version number including minor-minor
+		INFOTYPE_EBRSIZE   = 0x0017                //Returns the EBR channel size
 };
 
 /**
@@ -1136,8 +1070,7 @@ enum {	COPROCINFO_PLAT      = 0x0001,              //Returns the platform type
 		COPROCINFO_DATE      = 0x0005,              //Returns the version date
 		COPROCINFO_CISADDR   = 0x0006,              //Returns the CIS address
 		COPROCINFO_DMA       = 0x0007,              //Returns whether or not CoProc supports DMA mode
-		COPROCINFO_VERSIONEX = 0x0009,              //Returns the version number (major.minor.minorminor)
-		COPROCINFO_PN        = 0x000A               //Returns software part number
+		COPROCINFO_VERSIONEX = 0x0009               //Returns the version number (major.minor.minorminor)
 };
 
 /**
@@ -1149,9 +1082,7 @@ enum {	COPROCINFO_PLAT      = 0x0001,              //Returns the platform type
 enum {	CISTYPE_CARD         = 0x0001,              //Select card CIS
 		CISTYPE_IOMODULE     = 0x0002,              //Select I/O module CIS
 		CISTYPE_PLX          = 0x0003,              //Select PLX EEPROM
-		CISTYPE_INFO         = 0x0004,              //Select Info module CIS
-		CISTYPE_ENV          = 0x0005,              //Select environment
-		CISTYPE_BIT          = 0x0006               //Select bitfile
+		CISTYPE_INFO         = 0x0004               //Select Info module CIS
 };
 
 /**
@@ -1160,8 +1091,7 @@ enum {	CISTYPE_CARD         = 0x0001,              //Select card CIS
 *
 **/
 
-enum {	HANDINFO_CORENUM	= 0x0001,               //Returns the Handle Core number
-		HANDINFO_RPC		= 0x0002               //Returns the Handle Core number
+enum {	HANDINFO_CORENUM   = 0x0001               //Returns the Handle Core number
 };
 
 /**
@@ -1170,15 +1100,9 @@ enum {	HANDINFO_CORENUM	= 0x0001,               //Returns the Handle Core number
 *
 **/
 
-enum {	TRIGMASK_TRIGA     = 0x0001,               //Selects trigger line A from default DIN
-		TRIGMASK_TRIGB     = 0x0002,               //Selects trigger line B from default DIN
-		TRIGMASK_TRIGC     = 0x0004,               //Selects trigger line C from default DIN
-		TRIGMASK_PXITRIGA  = 0x0010,               //Selects trigger line A from PXI_TRIG[0]
-		TRIGMASK_PXITRIGB  = 0x0020,               //Selects trigger line B from PXI_TRIG[1]
-		TRIGMASK_PXITRIGC  = 0x0040,               //Selects trigger line C from PXI_TRIG[2]
-		TRIGMASK_PXISTARA  = 0x0100,               //Selects trigger line A from PXIe_DSTARA
-		TRIGMASK_PXISTARB  = 0x0200,               //Selects trigger line B from PXIe_DSTARB
-		TRIGMASK_PXISTARC  = 0x0400,               //Selects trigger line C from PXI_STAR
+enum {	TRIGMASK_TRIGA     = 0x0001,               //Selects trigger line A
+		TRIGMASK_TRIGB     = 0x0002,               //Selects trigger line B
+		TRIGMASK_TRIGC     = 0x0004,               //Selects trigger line C
 
 		TRIGVAL_TRIGAOFF   = 0x0000,               //Tests for trigger line A inactive
 		TRIGVAL_TRIGAON    = 0x0001,               //Tests for trigger line A active
@@ -1189,21 +1113,10 @@ enum {	TRIGMASK_TRIGA     = 0x0001,               //Selects trigger line A from 
 
 		TRIGPOL_TRIGAL     = 0x0000,               //Sets active low polarity for trigger line A
 		TRIGPOL_TRIGAH     = 0x0001,               //Sets active high polarity for trigger line A
-		TRIGPOL_TRIGAF     = 0x0010,               //Sets active on falling edge of trigger line A
-		TRIGPOL_TRIGAR     = 0x0011,               //Sets active on rising edge of trigger line A
-		TRIGPOL_TRIGAMASK  = 0x0011,               //Mask of all trigger line A options
-
 		TRIGPOL_TRIGBL     = 0x0000,               //Sets active low polarity for trigger line B
 		TRIGPOL_TRIGBH     = 0x0002,               //Sets active high polarity for trigger line B
-		TRIGPOL_TRIGBF     = 0x0020,               //Sets active on falling edge of trigger line B
-		TRIGPOL_TRIGBR     = 0x0022,               //Sets active on rising edge of trigger line B
-		TRIGPOL_TRIGBMASK  = 0x0022,               //Mask of all trigger line B options
-
 		TRIGPOL_TRIGCL     = 0x0000,               //Sets active low polarity for trigger line C
-		TRIGPOL_TRIGCH     = 0x0004,               //Sets active high polarity for trigger line C
-		TRIGPOL_TRIGCF     = 0x0040,               //Sets active on falling edge of trigger line C
-		TRIGPOL_TRIGCR     = 0x0044,               //Sets active on rising edge of trigger line C
-		TRIGPOL_TRIGCMASK  = 0x0044                //Mask of all trigger line C options
+		TRIGPOL_TRIGCH     = 0x0004                //Sets active high polarity for trigger line C
 };
 
 /**
@@ -1216,29 +1129,12 @@ enum {	SYNCMASK_SYNCA     = 0x0001,              //Selects sync line A
 		SYNCMASK_SYNCB     = 0x0002,              //Selects sync line B
 		SYNCMASK_SYNCC     = 0x0004,              //Selects sync line C
 
-		SYNCMASK_PXITRIGA  = 0x0100,              //Selects sync line A to PXI_TRIG 0
-		SYNCMASK_PXITRIGB  = 0x0200,              //Selects sync line B to PXI_TRIG 1
-		SYNCMASK_PXITRIGC  = 0x0400,              //Selects sync line C	to PXI_TRIG 2
-		SYNCMASK_PXISTARC  = 0x4000,              //Selects sync line C	to PXI STAR
-
 		SYNCPOL_SYNCAL     = 0x0000,              //Sets active low polarity for sync line A
 		SYNCPOL_SYNCAH     = 0x0001,              //Sets active high polarity for sync line A
 		SYNCPOL_SYNCBL     = 0x0000,              //Sets active low polarity for sync line B
 		SYNCPOL_SYNCBH     = 0x0002,              //Sets active high polarity for sync line B
 		SYNCPOL_SYNCCL     = 0x0000,              //Sets active low polarity for sync line C
 		SYNCPOL_SYNCCH     = 0x0004               //Sets active high polarity for sync line C
-};
-
-/**
-*
-*  PXI Status flags
-*
-**/
-
-enum {	PXITYPE_GEOADDR		= 0x0001,			//Return the Geographical Address
-		PXITYPE_CLKSEL		= 0x0002,			//Return the Clock Selection (Local oscillator vs PXIe_CLK100)
-		PXITYPE_TRIGVERS	= 0x0003,			//Return the Version of the triggers
-		PXITYPE_OUTEN		= 0x0004			//Return the bitmask of output enables for dionums 33 to 48
 };
 
 /**
@@ -1373,68 +1269,6 @@ enum {	BITSTAT_NOSTATUS				= 0x00000000L,		//No errors or warnings for BIT
 
 /**
 *
-*  Timing Synchronization Manager configuration options
-*
-**/
-
-enum {	TSMCFG_PPS0			= 0x00000001,				//PPS on DC Pin 0
-		TSMCFG_PPS1			= 0x00000002,				//PPS on DC Pin 1
-		TSMCFG_PWMIRIG0		= 0x00000004,				//DC IRIG on DC Pin 0
-		TSMCFG_PWMIRIG1		= 0x00000008,				//DC IRIG on DC Pin 1
-		TSMCFG_AMIRIG		= 0x00000010,				//AM IRIG
-		TSMCFG_10MHZ		= 0x00000020,				//10MHz (output and Drift control input only)
-		TSMCFG_HOST			= 0x00000040,				//Host (or 1588) control (input-only)
-		TSMCFG_PPSMODE		= 0x00000080,				//IRIG is in PPS Mode (input-only)
-		TSMCFG_AMDACAUTO	= 0x00000000,				//Enable auto-threshold determination for the IRIG AM high dac
-		TSMCFG_AMDACUSER	= 0x00000100,				//User control of threshold for the IRIG AM high dac
-		TSMCFG_IRIGDAYS		= 0x00000200,				//Select IRIG days counting from 1-365.  Default is 0-364
-		TSMCFG_NONE			= 0x00000000,				//Timer is free-running
-		TSMCFG_IRIGA		= 0x00010000,				//Set IRIG Time Code to A
-		TSMCFG_IRIGB		= 0x00000000				//Set IRIG Time Code to B (default)
-};
-
-/**
-*
-*  Timing Synchronization Manager status flags
-*
-**/
-
-enum {
-		TSMSTAT_IRIGPRES		= 0x00000001,			//Input IRIG signal is toggling and decodable
-		TSMSTAT_IRIGBITSYNC		= 0x00000002,			//Input IRIG signal is toggling
-		TSMSTAT_IRIGSYNC		= 0x00000004,			//TSM is locked to IRIG input
-		TSMSTAT_10MHZPRES		= 0x00000008,			//Input 10 MHz signal is toggling
-		TSMSTAT_10MHZSYNC		= 0x00000010,			//TSM is locked to 10 MHz input
-		TSMSTAT_PPSPRES			= 0x00000020,			//Input PPS signal is toggling
-		TSMSTAT_PPSSYNC			= 0x00000040,			//TSM is locked to PPS input
-		TSMSTAT_OUTOFBOUNDS		= 0x00000080			//Timing source is beyond drift synchronization threshold
-};
-
-/**
-*
-*  Timing Synchronization Manager pin selection values
-*
-**/
-
-enum {	TSMPIN_PWMIRIG0    = 0x0001,              //Index of PWM IRIG/PPS Pin 0 Threshold
-		TSMPIN_PWMIRIG1    = 0x0002,              //Index of PWM IRIG/PPS Pin 1 Threshold
-		TSMPIN_AMIRIGH     = 0x0003,              //Index of AM IRIG Pin High Threshold
-		TSMPIN_AMIRIGL     = 0x0004,              //Index of AM IRIG Pin Low Threshold
-		TSMPIN_10MHZ       = 0x0005               //Index of 10MHz Pin Threshold
-};
-
-/**
-*
-*  DIO Configuration selection values
-*
-**/
-
-enum {
-	EXTDIOBANKCFG_INPUTMODE = 1     //Set input mode to Open/Ground or 28V/Open (0-Open/Gnd, 1=28V/Open)
-};
-
-/**
-*
 *  Other flags.
 *
 **/
@@ -1520,12 +1354,7 @@ enum {	ERR_NONE          =  0,                   //No error
 		ERR_NOTINSYNC     = -103,                 //Not Synchronized to databus
 		ERR_SUPERFRM      = -104,                 //SuperFrame not configured
 		ERR_SUPERFRMNUM   = -105,                 //Invalid SuperFrame number was specified
-		ERR_BADPORT       = -106,                 //A bad port number was specified
-		ERR_NOTLHUB       = -107,                 //The Logical Hub has not been configured
-		ERR_UNDERFLOW     = -108,                 //The read failed because the buffer is empty
-		ERR_OVERFLOW      = -109,                 //The write failed because the buffer is full
-		ERR_ENDIAN        = -110,                 //An endianness mismatch was detected
-		ERR_NOCLK         = -111                  //Protocol clock source is missing or invalid
+		ERR_BADPORT       = -106                  //A bad port number was specified
 };
 
 #endif

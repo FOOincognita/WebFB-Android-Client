@@ -43,8 +43,8 @@ namespace Droid
 		public partial class Drawable
 		{
 			
-			// aapt resource value: 0x7F010000
-			public const int Icon = 2130771968;
+			// aapt resource value: 0x7f020000
+			public const int Icon = 2130837504;
 			
 			static Drawable()
 			{
@@ -59,29 +59,29 @@ namespace Droid
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7F020003
-			public const int closeSockText = 2130837507;
+			// aapt resource value: 0x7f050005
+			public const int LatButton = 2131034117;
 			
-			// aapt resource value: 0x7F020004
-			public const int destructButton = 2130837508;
+			// aapt resource value: 0x7f050004
+			public const int LatText = 2131034116;
 			
-			// aapt resource value: 0x7F020000
-			public const int LatButton = 2130837504;
+			// aapt resource value: 0x7f050003
+			public const int MyButton = 2131034115;
 			
-			// aapt resource value: 0x7F020001
-			public const int LatText = 2130837505;
+			// aapt resource value: 0x7f050006
+			public const int closeSockText = 2131034118;
 			
-			// aapt resource value: 0x7F020005
-			public const int left = 2130837509;
+			// aapt resource value: 0x7f050007
+			public const int destructButton = 2131034119;
 			
-			// aapt resource value: 0x7F020002
-			public const int MyButton = 2130837506;
+			// aapt resource value: 0x7f050000
+			public const int left = 2131034112;
 			
-			// aapt resource value: 0x7F020006
-			public const int result = 2130837510;
+			// aapt resource value: 0x7f050002
+			public const int result = 2131034114;
 			
-			// aapt resource value: 0x7F020007
-			public const int right = 2130837511;
+			// aapt resource value: 0x7f050001
+			public const int right = 2131034113;
 			
 			static Id()
 			{
@@ -96,7 +96,7 @@ namespace Droid
 		public partial class Layout
 		{
 			
-			// aapt resource value: 0x7F030000
+			// aapt resource value: 0x7f030000
 			public const int Main = 2130903040;
 			
 			static Layout()
@@ -112,14 +112,14 @@ namespace Droid
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7F040000
-			public const int ApplicationName = 2130968576;
+			// aapt resource value: 0x7f040002
+			public const int ApplicationName = 2130968578;
 			
-			// aapt resource value: 0x7F040001
-			public const int ButtonResult = 2130968577;
+			// aapt resource value: 0x7f040000
+			public const int ButtonResult = 2130968576;
 			
-			// aapt resource value: 0x7F040002
-			public const int TextResult = 2130968578;
+			// aapt resource value: 0x7f040001
+			public const int TextResult = 2130968577;
 			
 			static String()
 			{

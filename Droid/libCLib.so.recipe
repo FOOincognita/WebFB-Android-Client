@@ -7,5 +7,5 @@
   <Platform>ARM</Platform>
   <AndroidArchitecture>armeabi-v7a</AndroidArchitecture>
   <!--links to other recipe files-->
-  <RecipeFiles>C:\Users\arche\Desktop\XamarinNative-master\ARM\Debug\libbticard.so.recipe</RecipeFiles>
+  <RecipeFiles />
 </project>

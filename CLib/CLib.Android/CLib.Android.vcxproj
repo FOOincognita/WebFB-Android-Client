@@ -130,15 +130,20 @@
       <CLanguageStandard>c99</CLanguageStandard>
       <CppLanguageStandard>gnu++14</CppLanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatABI>softfp</FloatABI>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>-lm %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-lm -lc %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SharedLibrarySearchPath>%(SharedLibrarySearchPath)</SharedLibrarySearchPath>
       <LibraryDependencies>%(LibraryDependencies)</LibraryDependencies>
-      <Soname>$(TargetName)$(TargetExt);libbticard.so</Soname>
+      <Soname>$(TargetName)$(TargetExt)</Soname>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
@@ -146,14 +151,20 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>-D PLATFORM=0 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatABI>softfp</FloatABI>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <SharedLibrarySearchPath>%(SharedLibrarySearchPath)</SharedLibrarySearchPath>
       <LibraryDependencies>%(LibraryDependencies)</LibraryDependencies>
-      <Soname>$(TargetName)$(TargetExt);libbticard.so</Soname>
+      <Soname>$(TargetName)$(TargetExt)</Soname>
+      <AdditionalOptions>-lm -lc %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

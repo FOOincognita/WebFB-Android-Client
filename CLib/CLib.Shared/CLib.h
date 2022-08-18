@@ -39,6 +39,8 @@
 ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype);
 ERRVAL BTIUTIL_SeqFindNext(LPUINT16* pRecord, LPUINT16 seqtype, LPSEQFINDINFO sfinfo);
 
+#define strtoui16(x) (std::uint16_t)strtoul(std::string(x).c_str(), NULL, 0)
+#define UINT16_PORT strtoui16(DEFAULT_PORT)
 
 // WebFB Class
 class WebFB {
@@ -46,7 +48,7 @@ public:
     manage_t data;
 
 private:
-    int	            sockError;
+    error_t	        sockError;
     sigset_t    	sockSigMask;
     std::size_t		sockFD;
     std::string    	sockIP;
@@ -67,8 +69,10 @@ public:
     int rdSockData(std::uint16_t* pbuf, std::uint32_t bufsize);
     int sockPoll();
     std::string ParsePKTS(LPUINT16 buf, std::uint32_t wordcount, std::string lbl);
-    std::string GetArincData(std::string lbl);
+    // std::string GetArincData(std::string lbl);
     latitude_t GetLatData();
+
+    std::int32_t SeqFindInit(std::uint16_t* seqbuf, std::uint32_t seqbufsize, LPSEQFINDINFO sfinfo);
 };
 
 

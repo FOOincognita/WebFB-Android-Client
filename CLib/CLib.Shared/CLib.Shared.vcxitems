@@ -14,7 +14,14 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)CLib.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CLib.cpp">
+      <FloatABI Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">soft</FloatABI>
+      <FloatABI Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">soft</FloatABI>
+      <FloatABI Condition="'$(Configuration)|$(Platform)'=='Release|x86'">soft</FloatABI>
+      <FloatABI Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">soft</FloatABI>
+      <FloatABI Condition="'$(Configuration)|$(Platform)'=='Release|x64'">soft</FloatABI>
+      <FloatABI Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">soft</FloatABI>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)CLib.h" />
