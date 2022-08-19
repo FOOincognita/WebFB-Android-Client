@@ -33,6 +33,11 @@
 #include <sys/cdefs.h>
 #include <linux/poll.h>
 
+#include <csetjmp>
+#include <csignal>
+#include <cstdlib>
+#include <iostream>
+
 #include <BTICard.h>
 #include "global.h"
 
@@ -41,6 +46,8 @@ ERRVAL BTIUTIL_SeqFindNext(LPUINT16* pRecord, LPUINT16 seqtype, LPSEQFINDINFO sf
 
 #define strtoui16(x) (std::uint16_t)strtoul(std::string(x).c_str(), NULL, 0)
 #define UINT16_PORT strtoui16(DEFAULT_PORT)
+
+void on_sigabrt(int signum);
 
 enum { 
     POLL_FAIL =    -3,
@@ -67,6 +74,8 @@ private:
     std::string    	sockIP;
     std::uint16_t  	sockPort;
     std::uint32_t	sockPKT;
+    double          latErr;
+    double          latDat;
 
 public:
     WebFB();
@@ -83,9 +92,16 @@ public:
     int sockPoll();
     std::string ParsePKTS(LPUINT16 buf, std::uint32_t wordcount, std::string lbl);
     // std::string GetArincData(std::string lbl);
-    latitude_t GetLatData();
 
     std::int32_t SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfinfo);
+    double getLatErr() { return latErr; }
+    void incLatErr() { latErr++; }
+
+    double getLatDat() { return latDat; }
+    void setLatDat(double lat) { latDat = lat; }
 };
 
+void GetLatData__(WebFB* wfb);
+
+void try_and_catch_abort(void (*gLat)(WebFB*), WebFB* wfb);
 

@@ -1,8 +1,26 @@
 #include "CLib.h"
 
+jmp_buf env;
+int val(0);
+
+void on_sigabrt(int signum)
+{
+	signal(signum, SIG_DFL);
+	longjmp(env, 1);
+}
+
+void try_and_catch_abort(void (*gLat)(WebFB*), WebFB* wfb)
+{
+	if (setjmp(env) == 0) {
+		signal(SIGABRT, &on_sigabrt);
+		gLat(wfb);
+		signal(SIGABRT, SIG_DFL);
+	}
+}
+
 //* Default Constructor
 WebFB::WebFB()
-	: sockIP(DEFAULT_IP), sockPort(UINT16_PORT), sockFD(-1), sockError(0), sockPKT(0) {
+	: sockIP(DEFAULT_IP), sockPort(UINT16_PORT), sockFD(-1), sockError(0), sockPKT(0), latErr(0), latDat(0) {
 
 	if (!this->mkSock()) {
 		sockError = -1;
@@ -24,7 +42,7 @@ WebFB::WebFB()
 // @param IP: IP Address
 // @param Port: IP Address Port
 WebFB::WebFB(std::string IP, std::string Port)
-	: sockIP(IP), sockPort(strtoui16(Port)), sockFD(-1), sockError(0), sockPKT(0) {
+	: sockIP(IP), sockPort(strtoui16(Port)), sockFD(-1), sockError(0), sockPKT(0), latErr(0), latDat(0) {
 
 	if (!this->mkSock()) {
 		sockError = -1;
@@ -125,7 +143,7 @@ int WebFB::rdSockData(std::uint16_t* pbuf, std::uint32_t bufsize) {
 }
 
 //* Poll for events (data ready on socket)
-//?	-1 = Error
+//?	  -1 = Error
 //?   0 = Poll Timeout
 //?   1 = Data Waiting
 //?   2 = No Data
@@ -166,6 +184,7 @@ int WebFB::sockPoll() {
 //	Parse data packets read from the socket
 //? Returns empty string on failure
 std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) {
+	ERRVAL			  errval;
 	UINT16            seqtype;
 	LPUINT16          pRec;
 	std::string       hexStr;
@@ -173,7 +192,9 @@ std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) 
 	LPSEQRECORD429    pRec429;
 	std::stringstream ss;
 
-	if (this->SeqFindInit(buf, wordcount, &sfinfo)) { return ""; }
+	errval = this->SeqFindInit(buf, wordcount, &sfinfo);
+
+	if (errval) { return ""; }
 
 	while (!BTIUTIL_SeqFindNext(&pRec, &seqtype, &sfinfo)) {
 		if (seqtype == SEQTYPE_429) {
@@ -183,69 +204,40 @@ std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) 
 			ss << std::hex << ntohl(pRec429->data);
 			hexStr = ss.str();
 
-			if (hexStr.size() == 8 && hexStr.substr(hexStr.length() - 2) == lbl) { return hexStr; }
+			if (hexStr.size() == 8 && (hexStr.substr(hexStr.length() - 2) == lbl)) { return hexStr; }
 		}
 	}
 	return "";
 }
 
 // Returns double corresponding to c8, latitude values translated
-latitude_t WebFB::GetLatData() {
+void GetLatData__(WebFB* wfb) {
 	int 		result(0);
+	double		retVal(0);
 	std::string rawHex, w32, bit1428Str;
-	double retVal(0);
 
 	for (;;) {
-		if (this->sockPoll() == 1) {
-			try 
-			{
-				result = this->rdSockData(this->data.buf, MAXPKT);
-			}
-			catch (const char* msg)
-			{
-				return 1.1;
-			}
+		if (wfb->sockPoll() == 1) {
+			wfb->incLatErr();
+			result = wfb->rdSockData(wfb->data.buf, MAXPKT);
+			wfb->incLatErr();
 			if (result > 0) {
-				try 
-				{
-					rawHex = this->ParsePKTS(this->data.buf, result, std::string("c8"));
-				}
-				catch (const char* msg)
-				{
-					return 1.2;
-				}
-
-				try 
-				{
-					for (auto& i : rawHex) { w32 += hexMap.at(std::to_string(i)); }
-				}
-				catch (const char* msg)
-				{
-					return 1.3;
-				}
-
-				try 
-				{
+				wfb->incLatErr();
+				rawHex = wfb->ParsePKTS(wfb->data.buf, result, std::string("c8"));
+				wfb->incLatErr();
+				for (auto& i : rawHex) { w32 += hexMap.at(std::to_string(i)); }
+					wfb->incLatErr();
 					bit1428Str = w32.substr(4, 20);
-				}
-				catch (const char* msg)
-				{
-					return 1.4;
-				}
-
-				try 
-				{
+					wfb->incLatErr();
 					retVal = std::stol(bit1428Str.c_str(), nullptr, 2) * 0.00017166154;
-				}
-				catch (const char* msg)
-				{
-					return 1.5;
-				}
-				return retVal;
+					wfb->incLatErr();
+					wfb->setLatDat(retVal);
+					return;
 			}
 		}
 	}
 }
+
 
 /*
 								INTEL x86 Little Endian
