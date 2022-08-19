@@ -247,14 +247,12 @@ double WebFB::GetLatData()
  * [WARNING]: AVOID REVERSE ENGINEERING ANY OTHER FUNCTIONS FROM THEIR LIBRARY
  * AS IT IS A VIOLATION OF THE LICENSING AGREEMENT
  *
- *
- *
- *								INTEL x86 (Little Endian)
- *					SYNTAX:
- *						+ var = <size> ptr <stack base offset>
- *						+ mov	dst, src	| Move src into dst
- *						+ mov	[eax], edx	| Addr pointed to by eax <-- Contents of edx
- *						+ mov	ebx, [edx]	| ebx <-- Data @ address pointed to by edx
+ *							INTEL x86 (Little Endian)
+ *				SYNTAX:
+ *					+ var = <size> ptr <stack base offset>
+ *					+ mov	dst, src	| Move src into dst
+ *					+ mov	[eax], edx	| Addr pointed to by eax <-- Contents of edx
+ *					+ mov	ebx, [edx]	| ebx <-- Data @ address pointed to by edx
 */                                                                 
 // int                    unsigned short*    unsigned short	  struct SEQFINDINFO*
 ERRVAL WebFB::SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfinfo) {
@@ -269,15 +267,15 @@ ERRVAL WebFB::SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfin
 	if (!sfinfo) { return(ERR_SEQFINDINFO); } 
 		/*	
 		| 
-		*	mov    eax,	[esp+arg_3]  |	eax = sfinfo
-		*	mov	   edx, [esp+arg_1]	 |	edx = seqbuf
-		*	test   eax, eax			 |	if (sfinfo == 0)
-		*	jz	   short loc_6910E	 |  JUMP IFF ZERO-FLAG
+		*	mov  eax, [esp+arg_3]    |  eax = sfinfo
+		*	mov	 edx, [esp+arg_1]	 |	edx = seqbuf
+		*	test eax, eax			 |	if (sfinfo == 0)
+		*	jz   short loc_6910E	 |  JUMP IFF ZERO-FLAG
 		    |
 			* loc_6910E:
 			    |
-				* mov    eax, 0xFFFFFFAE  |  eax = -82
-				* retn					  |  return eax
+				* mov  eax, 0xFFFFFFAE  |  eax = -82
+				* retn					|  return eax
 		|
 		*/
 
@@ -285,27 +283,27 @@ ERRVAL WebFB::SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfin
 		/*
 		!    PREV:  edx = seqbuf
 		|
-		*	 mov    ecx, [esp+arg_2]  |  ecx = seqbufsize
-		*	 mov    [eax], edx		  |  sfinfo[0] = seqbuf
+		*	 mov  ecx, [esp+arg_2]  |  ecx = seqbufsize
+		*	 mov  [eax], edx		|  sfinfo[0] = seqbuf
 		|
 		*/
 	sfinfo->pRecNext = seqbuf;
 		/*
 		|
-		*    mov	[eax+4], edx  |  sfinfo[1] = seqbuf
+		*    mov  [eax+4], edx  |  sfinfo[1] = seqbuf
 		|
 		*/
 	sfinfo->pRecLast = seqbuf + seqbufsize*2;
 		/*
 		|
-		*    lea	edx, [edx+ecx*2]  |  edx = seqbuf + seqbufsize*2
-		*    mov    [eax+8], edx      |  sfinfo[2] = seqbuf + seqbufsize*2
+		*    lea  edx, [edx+ecx*2]  |  edx = seqbuf + seqbufsize*2
+		*    mov  [eax+8], edx      |  sfinfo[2] = seqbuf + seqbufsize*2
 		|
 		*/
 	return (ERR_NONE);
 		/*
 		|
-		*    xor    eax, eax  |  eax = 0 <=> ERR_NONE
+		*    xor  eax, eax  |  eax = 0 <=> ERR_NONE
 		|
 		*/
 }
