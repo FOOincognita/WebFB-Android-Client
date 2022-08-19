@@ -77,7 +77,7 @@ int WebFB::sockConnect() {
 //* Setup sig mask for ppoll
 //? Returns 0 when failure
 int WebFB::initSockPoll() {
-	return !(sigprocmask(SIG_BLOCK, NULL, &(this->sockSigMask)) < 0);
+	return (int)!(sigprocmask(SIG_BLOCK, NULL, &(this->sockSigMask)) < 0);
 }
 
 int WebFB::getErr() { return this->sockError; }
