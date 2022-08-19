@@ -89,7 +89,7 @@ int WebFB::getErr() { return this->sockError; }
 //   @param pbuf: Data Buffer
 //   @param bufsize: Size of Buffer in Bytes
 int WebFB::rdSockData(std::uint16_t* pbuf, std::uint32_t bufsize) {
-	int result(0), j(0);
+	int			  result(0);
 	std::uint32_t wordcount(0);
 
 	if (!pbuf) { return ERROR; } //? Error
@@ -149,20 +149,18 @@ int WebFB::sockPoll() {
 	if (result > 0) {
 		for (j = 0; j < nfds; j++) {
 			if (fds[j].revents & POLLIN) {
-				if (fds[j].fd == this->sockFD) { //? Data was sent from server
-					return DATA_WAITING; //? Data Waiting
-				}
+				if (fds[j].fd == this->sockFD) { return DATA_WAITING; }
 			}
 		}
-		return NO_DATA;	//? No Data
+		return NO_DATA;
 
 	} else if (!result) {
-		return pTIMEOUT; //? Poll Timeout
+		return pTIMEOUT; 
 
 	} else if (errno == EINTR) {
-		return NO_DATA; //? No Data
+		return NO_DATA; 
 	}
-	return ERROR; //? Error
+	return ERROR; 
 }
 
 //	Parse data packets read from the socket
@@ -195,15 +193,55 @@ std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) 
 latitude_t WebFB::GetLatData() {
 	int 		result(0);
 	std::string rawHex, w32, bit1428Str;
+	double retVal(0);
 
 	for (;;) {
 		if (this->sockPoll() == 1) {
-			result = this->rdSockData(this->data.buf, MAXPKT);
+			try 
+			{
+				result = this->rdSockData(this->data.buf, MAXPKT);
+			}
+			catch (const char* msg)
+			{
+				return 1.1;
+			}
 			if (result > 0) {
-				rawHex = this->ParsePKTS(this->data.buf, result, std::string("c8"));
-				for (auto& i : rawHex) { w32 += hexMap.at(std::to_string(i)); }
-				bit1428Str = w32.substr(4, 20);
-				return std::stol(bit1428Str.c_str(), nullptr, 2) * 0.00017166154;
+				try 
+				{
+					rawHex = this->ParsePKTS(this->data.buf, result, std::string("c8"));
+				}
+				catch (const char* msg)
+				{
+					return 1.2;
+				}
+
+				try 
+				{
+					for (auto& i : rawHex) { w32 += hexMap.at(std::to_string(i)); }
+				}
+				catch (const char* msg)
+				{
+					return 1.3;
+				}
+
+				try 
+				{
+					bit1428Str = w32.substr(4, 20);
+				}
+				catch (const char* msg)
+				{
+					return 1.4;
+				}
+
+				try 
+				{
+					retVal = std::stol(bit1428Str.c_str(), nullptr, 2) * 0.00017166154;
+				}
+				catch (const char* msg)
+				{
+					return 1.5;
+				}
+				return retVal;
 			}
 		}
 	}
@@ -288,7 +326,6 @@ ERRVAL BTIUTIL_SeqFindNext(LPUINT16* pRecord, LPUINT16 seqtype, LPSEQFINDINFO sf
 	if (!sfinfo) return(ERR_SEQFINDINFO);
 
 	for (pSeqBuf = sfinfo->pRecNext; pSeqBuf < sfinfo->pRecLast;) {
-		// Check for a known record type
 		errval = BTIUTIL_SeqFindCheckValidType(pSeqBuf[0]);
 		if (errval) return(errval); 
 

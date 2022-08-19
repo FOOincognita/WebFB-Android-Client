@@ -29,9 +29,6 @@ namespace Droid
 
             button.Click += (sender, args) =>
             {
-                // var left = int.Parse(FindViewById<EditText>(Resource.Id.left).Text);
-                // var right = int.Parse(FindViewById<EditText>(Resource.Id.right).Text);
-
                 string IP;
                 string Port;
 
@@ -42,14 +39,12 @@ namespace Droid
                 }
                 catch
                 { // SHOW DIALOG BOX ON EXCEPTION
-                    // Theme Chnage??
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                     AlertDialog alert = dialog.Create();
                     alert.SetTitle("Invalid Input");
                     alert.SetMessage("Please Enter Value Into Each Line");
                     alert.SetButton("OK", (c, ev) => { });
                     alert.Show();
-
                     return;
                 }
 
@@ -58,11 +53,26 @@ namespace Droid
                 FindViewById<TextView>(Resource.Id.result).Text = Convert.ToString(WebFB.getErr(wfbObj)); 
                     
             };
+
             // Get Lat Button
             latButton.Click += (sender, args) => 
             {
-                FindViewById<TextView>(Resource.Id.LatText).Text = Convert.ToString(WebFB.getLat(wfbObj));
+                string result = "";
+                double latDat = 0;
+                try
+                {
+                    result = Convert.ToString(WebFB.getLat(wfbObj));
+                }
+                catch (Exception ex)
+                {
+                    result = "[ERROR]: " + ex.ToString();
+                } 
+                finally 
+                {
+                    FindViewById<TextView>(Resource.Id.LatText).Text = result;
+                }
             };
+
             // Close Socket Button
             destrButton.Click += (sender, args) => 
             {
