@@ -41,39 +41,42 @@
 #include <BTICard.h>
 #include "global.h"
 
+// Functions provided by ballard; used in Parse Packets
 ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype);
 ERRVAL BTIUTIL_SeqFindNext(LPUINT16* pRecord, LPUINT16 seqtype, LPSEQFINDINFO sfinfo);
 
-#define strtoui16(x) (std::uint16_t)strtoul(std::string(x).c_str(), NULL, 0)
+// std::string to unsigned long; for proper port conversion
+#define strtoui16(x)  \
+        (std::uint16_t)strtoul(std::string(x).c_str(), NULL, 0) 
+
 #define UINT16_PORT strtoui16(DEFAULT_PORT)
 
-// void on_sigabrt(int signum);
+// void on_sigabrt(int signum); USED TO CATCH SIGABRT
 
-enum { 
-    POLL_FAIL =    -3,
-    CONN_FAIL =    -2,
-    MKSOCK_FAIL =  -1,
-    ERROR =        -1,  
-    SUCCESS =       0,
-    PULSEPKT =      0, 
-    pTIMEOUT =      0, 
-    DATA_WAITING =  1, 
-    NO_DATA =       2 
+enum 
+{ 
+    POLL_FAIL =    -3,  // WebFB::initSockPoll() failed flag
+    CONN_FAIL =    -2,  // WebFB::sockConnect() failed flag
+    MKSOCK_FAIL =  -1,  // WebFB::mkSock() failed flag
+    ERROR =        -1,  // General Error flag
+    SUCCESS =       0,  // General Success flag
+    PULSEPKT =      0,  // WebFB::rdSockData() Pulse packet flag
+    pTIMEOUT =      0,  // WebFB::sockPoll() Poll timeout flag
+    DATA_WAITING =  1,  // WebFB::sockPoll() Data Waiting flag
+    NO_DATA =       2   // WebFB::sockPoll() No Data flag
 };
 
 
 // WebFB Class
-class WebFB {
-public:
-    manage_t data;
+class WebFB 
+{
 
-private:
-    error_t	        sockError;
-    sigset_t    	sockSigMask;
-    std::size_t		sockFD;
-    std::string    	sockIP;
-    std::uint16_t  	sockPort;
-    std::uint32_t	sockPKT;
+    error_t	        sockError;      // Socket error value
+    sigset_t    	sockSigMask;    // Socket SigMask value
+    std::size_t		sockFD;         // Socket file descriptor
+    std::string    	sockIP;         // Socket IP
+    std::uint16_t  	sockPort;       // Socket Port
+    std::uint32_t	sockPKT;        // Socket Packets
 
 public:
     WebFB();
@@ -89,8 +92,7 @@ public:
     int rdSockData(std::uint16_t* pbuf, std::uint32_t bufsize);
     int sockPoll();
     std::string ParsePKTS(LPUINT16 buf, std::uint32_t wordcount, std::string lbl);
-
-    std::int32_t SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfinfo);
+    ERRVAL SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfinfo);
 
     double GetLatData();
 };
