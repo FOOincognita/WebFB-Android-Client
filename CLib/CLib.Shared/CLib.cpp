@@ -1,5 +1,6 @@
 #include "CLib.h"
 
+/*
 jmp_buf env;
 int val(0);
 
@@ -17,21 +18,20 @@ void try_and_catch_abort(void (*gLat)(WebFB*), WebFB* wfb)
 		signal(SIGABRT, SIG_DFL);
 	}
 }
+*/
 
 //* Default Constructor
 WebFB::WebFB()
-	: sockIP(DEFAULT_IP), sockPort(UINT16_PORT), sockFD(-1), sockError(0), sockPKT(0), latErr(0), latDat(0) {
+	: sockIP(DEFAULT_IP), sockPort(UINT16_PORT), sockFD(-1), sockError(0), sockPKT(0) {
 
 	if (!this->mkSock()) {
 		sockError = -1;
 		return;
 	}
-
 	if (!this->sockConnect()) {
 		sockError = -2;
 		return;
 	}
-
 	if (!this->initSockPoll()) {
 		sockError = -3;
 		return;
@@ -42,18 +42,16 @@ WebFB::WebFB()
 // @param IP: IP Address
 // @param Port: IP Address Port
 WebFB::WebFB(std::string IP, std::string Port)
-	: sockIP(IP), sockPort(strtoui16(Port)), sockFD(-1), sockError(0), sockPKT(0), latErr(0), latDat(0) {
+	: sockIP(IP), sockPort(strtoui16(Port)), sockFD(-1), sockError(0), sockPKT(0) {
 
 	if (!this->mkSock()) {
 		sockError = -1;
 		return;
 	}
-
 	if (!this->sockConnect()) {
 		sockError = -2;
 		return;
 	}
-
 	if (!this->initSockPoll()) {
 		sockError = -3;
 		return;
@@ -163,9 +161,9 @@ int WebFB::sockPoll() {
 	nfds++;
 
 	//	Poll for signal
-	result = ppoll(fds, nfds, &timeout, &(this->sockSigMask));
-	if (result > 0) {
-		for (j = 0; j < nfds; j++) {
+	result = ppoll(fds, nfds, &timeout, &(this->sockSigMask)); //!!! POLL.H IS A POSSIBLE ERROR SOURCE,
+	if (result > 0) {													// BUT MSVS PROVIDED THIS ANDROID COMPATIBLE VERSION
+		for (j = 0; j < nfds; j++) {									// ERR SOURCE: "_Nullable"
 			if (fds[j].revents & POLLIN) {
 				if (fds[j].fd == this->sockFD) { return DATA_WAITING; }
 			}
@@ -211,28 +209,18 @@ std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) 
 }
 
 // Returns double corresponding to c8, latitude values translated
-void GetLatData__(WebFB* wfb) {
+double WebFB::GetLatData() {
 	int 		result(0);
-	double		retVal(0);
 	std::string rawHex, w32, bit1428Str;
 
 	for (;;) {
-		if (wfb->sockPoll() == 1) {
-			wfb->incLatErr();
-			result = wfb->rdSockData(wfb->data.buf, MAXPKT);
-			wfb->incLatErr();
+		if (this->sockPoll() == 1) {
+			result = this->rdSockData(this->data.buf, MAXPKT);
 			if (result > 0) {
-				wfb->incLatErr();
-				rawHex = wfb->ParsePKTS(wfb->data.buf, result, std::string("c8"));
-				wfb->incLatErr();
+				rawHex = this->ParsePKTS(this->data.buf, result, std::string("c8"));
 				for (auto& i : rawHex) { w32 += hexMap.at(std::to_string(i)); }
-					wfb->incLatErr();
-					bit1428Str = w32.substr(4, 20);
-					wfb->incLatErr();
-					retVal = std::stol(bit1428Str.c_str(), nullptr, 2) * 0.00017166154;
-					wfb->incLatErr();
-					wfb->setLatDat(retVal);
-					return;
+				bit1428Str = w32.substr(4, 20);
+				return std::stol(bit1428Str.c_str(), nullptr, 2) * 0.00017166154;
 			}
 		}
 	}

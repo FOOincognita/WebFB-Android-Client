@@ -11,7 +11,6 @@
 // Typedefs
 typedef short           error_t;
 typedef double          latitude_t;
-typedef unsigned long   ulong32_t;
 typedef struct manage_t {
     std::uint16_t  buf[MAXPKT];    // Data Buffer
 } manage_t;

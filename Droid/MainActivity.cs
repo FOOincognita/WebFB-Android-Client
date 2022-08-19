@@ -54,7 +54,7 @@ namespace Droid
                     
             };
 
-            // Get Lat Button
+            // Get Lat Button 
             latButton.Click += (sender, args) => 
             {
                 string result = "";
