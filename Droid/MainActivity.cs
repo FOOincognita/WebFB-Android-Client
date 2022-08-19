@@ -64,7 +64,7 @@ namespace Droid
                 FindViewById<TextView>(Resource.Id.LatText).Text = Convert.ToString(WebFB.getLat(wfbObj));
             };
             // Close Socket Button
-            latButton.Click += (sender, args) => 
+            destrButton.Click += (sender, args) => 
             {
                 WebFB.destruct(wfbObj);
                 FindViewById<TextView>(Resource.Id.closeSockText).Text = "Success";

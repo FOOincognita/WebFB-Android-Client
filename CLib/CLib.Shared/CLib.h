@@ -42,6 +42,19 @@ ERRVAL BTIUTIL_SeqFindNext(LPUINT16* pRecord, LPUINT16 seqtype, LPSEQFINDINFO sf
 #define strtoui16(x) (std::uint16_t)strtoul(std::string(x).c_str(), NULL, 0)
 #define UINT16_PORT strtoui16(DEFAULT_PORT)
 
+enum { 
+    POLL_FAIL =    -3,
+    CONN_FAIL =    -2,
+    MKSOCK_FAIL =  -1,
+    ERROR =        -1,  
+    SUCCESS =       0,
+    PULSEPKT =      0, 
+    pTIMEOUT =      0, 
+    DATA_WAITING =  1, 
+    NO_DATA =       2 
+};
+
+
 // WebFB Class
 class WebFB {
 public:
@@ -72,7 +85,7 @@ public:
     // std::string GetArincData(std::string lbl);
     latitude_t GetLatData();
 
-    std::int32_t SeqFindInit(std::uint16_t* seqbuf, std::uint32_t seqbufsize, LPSEQFINDINFO sfinfo);
+    std::int32_t SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfinfo);
 };
 
 

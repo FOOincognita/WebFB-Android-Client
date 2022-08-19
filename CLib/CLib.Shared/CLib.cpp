@@ -8,24 +8,15 @@ WebFB::WebFB()
 		sockError = -1;
 		return;
 	}
-	else {
-		sockError = 0;
-	}
 
 	if (!this->sockConnect()) {
 		sockError = -2;
 		return;
 	}
-	else {
-		sockError = 0;
-	}
 
 	if (!this->initSockPoll()) {
 		sockError = -3;
 		return;
-	}
-	else {
-		sockError = 0;
 	}
 }
 
@@ -39,24 +30,15 @@ WebFB::WebFB(std::string IP, std::string Port)
 		sockError = -1;
 		return;
 	}
-	else {
-		sockError = 0;
-	}
 
 	if (!this->sockConnect()) {
 		sockError = -2;
 		return;
 	}
-	else {
-		sockError = 0;
-	}
 
 	if (!this->initSockPoll()) {
 		sockError = -3;
 		return;
-	}
-	else {
-		sockError = 0;
 	}
 }
 
@@ -110,32 +92,32 @@ int WebFB::rdSockData(std::uint16_t* pbuf, std::uint32_t bufsize) {
 	int result(0), j(0);
 	std::uint32_t wordcount(0);
 
-	if (!pbuf) { return -1; } //? Error
+	if (!pbuf) { return ERROR; } //? Error
 
 	result = recv(this->sockFD, (char*)&wordcount, sizeof(wordcount), MSG_WAITALL);
 
-	//Socket error - disconnected?
-	if (result <= 0) { return -1; }
+	// Disconnected?
+	if (result <= 0) { return ERROR; }
 
-	//Unexpected packet
-	if (result != sizeof(wordcount)) { return -1; }
+	// Unexpected packet
+	if (result != sizeof(wordcount)) { return ERROR; }
 
 	//Switch count from network to host order
 	wordcount = ntohl(wordcount);
 
 	//? Pulse packet
-	if (!wordcount) { return 0; }
+	if (!wordcount) { return PULSEPKT; }
 
 	//? Error: Unexpected packet
-	if (wordcount > bufsize) { return -1; }
+	if (wordcount > bufsize) { return ERROR; }
 
 	result = recv(this->sockFD, (char*)pbuf, wordcount * 2, MSG_WAITALL);
 
 	//? Error: Socket disconnected?
-	if (result <= 0) { return -1; }
+	if (result <= 0) { return ERROR; }
 
 	//? Error: Unexpected packet
-	if (result != (wordcount * 2)) { return -1; }
+	if (result != (wordcount * 2)) { return ERROR; }
 
 	this->sockPKT++;
 
@@ -168,19 +150,19 @@ int WebFB::sockPoll() {
 		for (j = 0; j < nfds; j++) {
 			if (fds[j].revents & POLLIN) {
 				if (fds[j].fd == this->sockFD) { //? Data was sent from server
-					return 1; //? Data Waiting
+					return DATA_WAITING; //? Data Waiting
 				}
 			}
 		}
-		return 2;	//? No Data
+		return NO_DATA;	//? No Data
+
+	} else if (!result) {
+		return pTIMEOUT; //? Poll Timeout
+
+	} else if (errno == EINTR) {
+		return NO_DATA; //? No Data
 	}
-	else if (!result) {
-		return 0; //? Poll Timeout
-	}
-	else if (errno == EINTR) {
-		return 2; //? No Data
-	}
-	return -1; //? Error
+	return ERROR; //? Error
 }
 
 //	Parse data packets read from the socket
@@ -198,8 +180,7 @@ std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) 
 	while (!BTIUTIL_SeqFindNext(&pRec, &seqtype, &sfinfo)) {
 		if (seqtype == SEQTYPE_429) {
 			pRec429 = (LPSEQRECORD429)pRec;
-			hexStr.clear();
-			ss.clear();
+			hexStr.clear(); ss.clear();
 
 			ss << std::hex << ntohl(pRec429->data);
 			hexStr = ss.str();
@@ -227,15 +208,70 @@ latitude_t WebFB::GetLatData() {
 		}
 	}
 }
-// ERRVAL                       LPUINT16               ULONG
-std::int32_t WebFB::SeqFindInit(std::uint16_t* seqbuf, std::uint32_t seqbufsize, LPSEQFINDINFO sfinfo) {
-	if (!sfinfo) { return 0xffffffae; }
 
-	*(int32_t*)sfinfo = *seqbuf; ///!!!!!!!
+/*
+								INTEL x86 Little Endian
+					SNTX:
+						+ var = <size> ptr <stack base offset>
+						+ mov	dst, src
+						- mov	[eax], edx	| Addr pointed to by eax <-- Contents of edx
+						- mov	ebx, [edx]	| ebx <-- Data @ address pointed to by edx
+*/
+//                                                                   
+// int                    unsigned short*    unsigned short	  struct SEQFINDINFO*
+ERRVAL WebFB::SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfinfo) {
+	/*	
+	| 
+	*	arg_1 = dword ptr 0x4    |    seqbuf		
+	*	arg_2 = dword ptr 0x8	 |	  seqbufsize	
+	*	arg_3 = dword ptr 0xC    |	  sfinfo		
+	| 
+	*/
+
+	if (!sfinfo) { return(ERR_SEQFINDINFO); }
+		/*	
+		| 
+		*	mov    eax,	[esp+arg_3]    -|	 eax = sfinfo
+		*	mov	   edx, [esp+arg_1]	    |	 edx = seqbuf
+		*	test   eax, eax			    |	 if (sfinfo == 0)
+		*	jz	   short loc_6910E	   -|	 JUMP IF ZERO-FLAG == 1
+		    |
+			* loc_6910E:
+			    |
+				* mov    eax, 0xFFFFFFAE    -|    eax = -82
+				* retn					    -|    return eax
+		|
+		*/
+
+	sfinfo->pRecFirst = seqbuf;
+		/*
+		!    PREV:  edx = seqbuf
+		|
+		*	 mov    ecx, [esp+arg_2]    |    ecx = seqbufsize
+		*	 mov    [eax], edx		    |    sfinfo[0] = seqbuf
+		|
+		*/
 	sfinfo->pRecNext = seqbuf;
-	sfinfo->pRecLast = seqbuf + (seqbufsize << 1);
-
-	return 0;
+		/*
+		!    PREV:  edx = seqbuf
+		|
+		*    mov	[eax+4], edx    |    sfinfo[1] = seqbuf
+		|
+		*/
+	sfinfo->pRecLast = seqbuf + seqbufsize*2;
+		/*
+		!    PREV:  edx = seqbuf
+		|
+		*    lea	edx, [edx+ecx*2]    |    edx = seqbuf + seqbufsize*2
+		*    mov    [eax+8], edx        |    sfinfo[2] = seqbuf + seqbufsize*2
+		|
+		*/
+	return (ERR_NONE);
+		/*
+		|
+		*    xor    eax, eax    |    eax = 0 <=> ERR_NONE
+		|
+		*/
 }
 
 ///////////////////////////////////////////////////////////////////
