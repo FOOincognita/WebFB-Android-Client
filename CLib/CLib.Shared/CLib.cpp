@@ -242,10 +242,6 @@ double WebFB::GetLatData()
 
 
 /*******************************************************************************************
- * THIS IS BTICard_SeqFindInit() FROM libbticard.so (x86) 
- * DISASSEMBLED INTO INTEL x86 ASM,THEN REASSEMBLED TO C LINE-BY-LINE
- * [WARNING]: AVOID REVERSE ENGINEERING ANY OTHER FUNCTIONS FROM THEIR LIBRARY
- * AS IT IS A VIOLATION OF THE LICENSING AGREEMENT
  *
  *							INTEL x86 (Little Endian)
  *				SYNTAX:
@@ -304,6 +300,7 @@ ERRVAL WebFB::SeqFindInit(LPUINT16 seqbuf, UINT32 seqbufsize, LPSEQFINDINFO sfin
 		/*
 		|
 		*    xor  eax, eax  |  eax = 0 <=> ERR_NONE
+		*	 retn			| return eax
 		|
 		*/
 }
